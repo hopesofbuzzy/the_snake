@@ -42,24 +42,25 @@ clock = pygame.time.Clock()
 
 
 # Тут опишите все классы игры.
-class GameObject(ABC):
-    def __init__(self):
-        self.position = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+class GameObject:
+    def __init__(self, position=(0, 0), body_color=(255, 0, 0)):
+        self.position = position
+        self.body_color = body_color
     
-    @abstractmethod
     def draw(self):
         ...
 
 
 class Apple(GameObject):
-    def __init__(self, snake):
-        super().__init__()
-        self.body_color = (255, 0, 0)
+    def __init__(self, position=(0, 0), body_color=(255, 0, 0), snake=None):
+        super().__init__(position, body_color)
         self.position = self.randomize_position(snake)
     
     def randomize_position(self, snake):
         while True:
             new_position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE, randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+            if snake is None:
+                break
             if not(new_position in snake.positions):
                 break
         return new_position
@@ -71,7 +72,8 @@ class Apple(GameObject):
 
 
 class Snake(GameObject):
-    def __init__(self):
+    def __init__(self, position=(0, 0), body_color=(0, 255, 0)):
+        super().__init__(position, body_color)
         self.reset_values()
 
     def update_direction(self):
@@ -81,7 +83,6 @@ class Snake(GameObject):
     
     def move(self, apple):
         new_position = (self.positions[0][0] + self.direction[0] * GRID_SIZE, self.positions[0][1] + self.direction[1] * GRID_SIZE)
-        print(new_position)
         if new_position[0] < 0:
             new_position = (SCREEN_WIDTH + new_position[0], new_position[1])
         elif new_position[0] >= SCREEN_WIDTH:
@@ -134,8 +135,7 @@ class Snake(GameObject):
         self.length = 1
         self.direction = RIGHT
         self.next_direction = None
-        self.positions = [(SCREEN_WIDTH / 2 // GRID_SIZE * GRID_SIZE, SCREEN_HEIGHT / 2 // GRID_SIZE * GRID_SIZE)]
-        self.body_color = (0, 255, 0)
+        self.positions = [self.position]
         self.last = (0, 0)
 
 
@@ -159,8 +159,8 @@ def main():
     # Инициализация PyGame:
     pygame.init()
     # Тут нужно создать экземпляры классов.
-    snake = Snake()
-    apple = Apple(snake)
+    snake = Snake((0, 0), (0, 255, 0))
+    apple = Apple((0, 0), (255, 0, 0), snake)
 
     while True:
         clock.tick(SPEED)

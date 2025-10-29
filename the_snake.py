@@ -8,11 +8,16 @@ GRID_SIZE = 20
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
 
+GRID_CENTER_WIDTH = SCREEN_WIDTH / 2 // GRID_SIZE * GRID_SIZE
+GRID_CENTER_HEIGHT = SCREEN_HEIGHT / 2 // GRID_SIZE * GRID_SIZE
+GRID_CENTER = (GRID_CENTER_WIDTH, GRID_CENTER_HEIGHT)
+
 # Направления движения:
 UP = (0, -1)
 DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
+ZERO = (0, 0)
 
 # Цвет фона - черный:
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
@@ -69,7 +74,7 @@ class Apple(GameObject):
     Яблоко отображается в случайных клетках игрового поля.
     """
 
-    def __init__(self, position=(0, 0), body_color=(255, 0, 0)):
+    def __init__(self, position=GRID_CENTER, body_color=APPLE_COLOR):
         """
         Конструктор для класса яблока
 
@@ -104,7 +109,7 @@ class Snake(GameObject):
     а также обрабатывает действия пользователя.
     """
 
-    def __init__(self, position=(0, 0), body_color=(0, 255, 0)):
+    def __init__(self, position=GRID_CENTER, body_color=SNAKE_COLOR):
         """
         Конструктор для класса змейки
 
@@ -149,11 +154,6 @@ class Snake(GameObject):
         Метод для отрисовки змейки. Рисует голову и "затирает" хвост.
         Затирание происходит с помощью цвета фона.
         """
-        for position in self.positions[:-1]:
-            rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, self.body_color, rect)
-            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-
         # Отрисовка головы змейки
         head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, head_rect)
@@ -188,7 +188,7 @@ class Snake(GameObject):
         self.direction = RIGHT
         self.next_direction = None
         self.positions = [self.position]
-        self.last = (0, 0)
+        self.last = ZERO
 
 
 def handle_keys(game_object):
@@ -197,10 +197,13 @@ def handle_keys(game_object):
     Регулирует контроль змейки и не даёт сделать "невозможный" поворот.
     """
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if (event.type == pygame.QUIT):
             pygame.quit()
             raise SystemExit
         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                raise SystemExit
             if event.key == pygame.K_UP and game_object.direction != DOWN:
                 game_object.next_direction = UP
             elif event.key == pygame.K_DOWN and game_object.direction != UP:
@@ -216,8 +219,8 @@ def main():
     # Инициализация PyGame:
     pygame.init()
     # Тут нужно создать экземпляры классов.
-    snake = Snake((0, 0), (0, 255, 0))
-    apple = Apple((0, 0), (255, 0, 0))
+    snake = Snake(GRID_CENTER, SNAKE_COLOR)
+    apple = Apple(GRID_CENTER, APPLE_COLOR)
 
     while True:
         clock.tick(SPEED)

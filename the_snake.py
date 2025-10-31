@@ -151,7 +151,7 @@ class Snake(GameObject):
 
     def draw(self):
         """
-        Метод для отрисовки змейки. Рисует голову и "затирает" хвост.
+        Метод для отрисовки змейки. Рисует голову и 'затирает' хвост.
         Затирание происходит с помощью цвета фона.
         """
         # Отрисовка головы змейки
@@ -194,10 +194,10 @@ class Snake(GameObject):
 def handle_keys(game_object):
     """
     Считывает ввод пользователя и передаёт данные в game_object.
-    Регулирует контроль змейки и не даёт сделать "невозможный" поворот.
+    Регулирует контроль змейки и не даёт сделать 'невозможный' поворот.
     """
     for event in pygame.event.get():
-        if (event.type == pygame.QUIT):
+        if event.type == pygame.QUIT:
             pygame.quit()
             raise SystemExit
         elif event.type == pygame.KEYDOWN:
@@ -234,10 +234,10 @@ def main():
             # Убедимся, что новая позиция яблока не на теле змейки
             while True:
                 apple.position = apple.randomize_position()
-                if not (apple.position in snake.positions):
+                if apple.position not in snake.positions:
                     break
         else:
-            # В ином случае "затираем" конец хвоста
+            # В ином случае 'затираем' конец хвоста
             snake.last = snake.positions[-1]
             snake.positions = snake.positions[:-1]
 
